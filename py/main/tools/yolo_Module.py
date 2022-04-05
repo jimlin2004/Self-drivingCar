@@ -62,6 +62,7 @@ class Yolo_module(object):
         is_stop = False
         for obj in pre:
             if (obj.conf >= 0.5):
+                # print(f"{obj.box[2]}, {obj.box[3]}")
                 self.__puttext_and_draw_pre(img, obj)
                 if (obj.classname == "Limit40"):
                     speed = 40
@@ -69,10 +70,28 @@ class Yolo_module(object):
                     speed = 60
                 elif (obj.classname == "Limit100"):
                     speed = 100
-                if (obj.classname == "Human" or obj.classname == "RedLight" or obj.classname == "Car"):
+                if ((obj.classname == "Human" or obj.classname == "RedLight" or obj.classname == "Car") and (obj.box[2] >= 60 and obj.box[3] >= 60)):
                     is_stop = True
                     print("STOP")
                 else:
                     is_stop = False
                     
         return [speed, is_stop]
+    
+    def test(self, img: np.ndarray):
+        pre = self.predict(img)
+        for obj in pre:
+            if (obj.conf >= 0.5):
+                self.__puttext_and_draw_pre(img, obj)
+                if ((obj.classname == "Human" or obj.classname == "RedLight" or obj.classname == "Car") and (obj.box[2] >= 120 and obj.box[3] >= 120)):
+                    print("STOP")
+                    print(f"{obj.box[2]}, {obj.box[3]}")
+    
+if __name__ == "__main__":
+    obj = Yolo_module("cfg/self-driving-car.names", "cfg/yolov4-tiny.cfg", "weight/yolov4-tiny_final.weights")
+    cap = cv2.VideoCapture(0)
+    while (cap.isOpened()):
+        ret, img = cap.read()
+        obj.test(img)
+        cv2.imshow("img", img)
+        cv2.waitKey(1)

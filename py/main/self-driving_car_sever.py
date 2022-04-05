@@ -14,9 +14,9 @@ class Self_driving_car(object):
     def __init__(self, host: str, port: int, is_show: bool) -> None:
         self.is_show = is_show
         print("[INFO] start loading...")
-        self.Decision_maker = Decision_maker("tools/CNN/model_keras_speed100")
+        self.Decision_maker = Decision_maker("tools/CNN/model_keras_2022_03_27_SGD_balance")
         print("[INFO] tensorflow model loaded finished")
-        self.Yolo_module = Yolo_module("tools/cfg/self-driving-car.names", "tools/cfg/yolo-fastest-1.1.cfg", "tools/weight/yolo-fastest-1_last.weights")
+        self.Yolo_module = Yolo_module("tools/cfg/self-driving-car.names", "tools/cfg/yolov4-tiny.cfg", "tools/weight/yolov4-tiny_final.weights")
         print("[INFO] yolo model loaded finished")
         self.cap = cv2.VideoCapture(0)
         self.LaneFinding = LaneFinding(0)
@@ -30,8 +30,8 @@ class Self_driving_car(object):
         # }
         self.command_dict = {
             0: "forward",
-            2: "turn_right", 
-            1: "turn_left"
+            1: "turn_right", 
+            2: "turn_left"
         }
         self.speed_dict = {
             40: "set_speed_40",
@@ -103,7 +103,7 @@ class Self_driving_car(object):
             self.virtual_joystick.event.speed, self.is_stop = self.Yolo_module.reset_parameter(frame, prediction_yolo, self.virtual_joystick.event.speed, self.is_stop)
             prediction =  self.__predict(frame, self.virtual_joystick.event.speed)
             # print(prediction.command, prediction.turn)
-            cv2.putText(frame, "Command: {} Turn: {}".format(prediction.command, prediction.turn), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (154, 24, 90), 2)
+            # cv2.putText(frame, "Command: {} Turn: {}".format(prediction.command, prediction.turn), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (154, 24, 90), 2)
             if (self.is_show):
                 cv2.imshow("cap", frame)
                 if cv2.waitKey(1) == ord('q'):
@@ -122,6 +122,6 @@ class Self_driving_car(object):
         self.thread_self_driving.join()
 
 if __name__ == "__main__":
-    self_driving_car = Self_driving_car("192.168.168.16", 8000, True)
+    self_driving_car = Self_driving_car("192.168.168.11", 8000, True)
     self_driving_car.start()
     self_driving_car.stop()

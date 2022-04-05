@@ -29,7 +29,7 @@ class Collect_data(object):
         while (self.cap.isOpened()):
             ret, frame = self.cap.read()
             if (self.run):
-                frame = self.laneFinding.transform_img(frame)
+                # frame = self.laneFinding.transform_img(frame)
                 cv2.imshow("client", frame)
                 cv2.waitKey(1)
                 img_data = self.frame_to_data(frame)
